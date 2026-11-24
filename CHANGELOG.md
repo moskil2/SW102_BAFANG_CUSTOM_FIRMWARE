@@ -1,0 +1,145 @@
+# Changelog
+
+Version history for the `SW102_BAF_X.Y.Z` firmware.
+
+## 0.2.3 (2026-11-24)
+
+- New "Power unit" setting in the Cockpit menu: the power row shows motor power in watts (W, default) or battery current in amps with one decimal (A), e.g. "16.5 A". The controller reports current in 0.5 A steps, adjusted by "Current cal."
+- New, bolder "W" unit letter
+
+## 0.2.0 (2026-11-15)
+
+- New "Controller" menu setting: OEM (default) or BBS-FW. Select BBS-FW only if your controller runs the open source BBS-FW firmware. With OEM everything works as before
+- With BBS-FW, Assist Level Programming reads and writes the BBS-FW configuration and shows both of its tables, STANDARD and SPORT, with CURRENT, CADENCE and SPEED for PAS 0-9. Saving changes only these values, all other BBS-FW settings stay as they are. New values apply at once, no restart needed
+- With BBS-FW, holding UP + DOWN for 3 seconds switches Standard/Sport. This is the display's "Sport Button": set "Operation Mode Toggle" to "Sport Button" in the BBS-FW configuration tool. With "Off" the display shows "SPORT IS OFF IN BBS-FW". With "Lights Button" or "PAS x + Lights Button" the mode is switched with the light (UP long press), as set in BBS-FW. STREET/RACE is not used with BBS-FW
+- Info: new last line with the selected controller and the BBS-FW version read from the controller
+- Assist Level Programming: the double line above RACE no longer touches the row above it
+- The boot screen shows the correct version number (0.1.9 showed V0.1.8)
+
+## 0.1.9 (2026-11-03)
+
+- Trip History list: each row now shows the trip riding time instead of its distance, for example "1. 1h 45min"
+- Single trips can be deleted: open a trip, press DOWN to show "Delete this trip" (UP goes back), then press M. The trip is deleted at once and the following trips move up one number
+- Long menu items now scroll about a third faster
+
+## 0.1.8 (2026-11-02)
+
+- New "Trip History" menu item under "Trip reset": the last 10 trips, newest first. "Trip reset" (now "Confirm Trip Reset and Save") saves the trip before clearing TRIP; a reset at zero distance saves nothing, and with 10 trips saved the oldest is replaced. M opens a trip with the same values as the data screen, PWR goes back. Cleared by "Factory reset"
+- Statistics: 2 px separator lines
+
+## 0.1.7 (2026-11-02)
+
+- New "Statistics" menu item under "Trip reset": ODO, average speed, average efficiency, energy used, run time, maximum power and maximum current over the display's lifetime. UP/DOWN scrolls, PWR goes back. Cleared only by "Factory reset"; "Trip reset" and editing ODO by hand leave them unchanged. They start from zero after this update
+- Run time counts while the display is on and pauses after 30 minutes without moving
+- ODO, TRIP, energy counters and statistics are now also saved every minute while riding and 30 seconds after stopping. Switching the battery off without powering off the display no longer loses everything since the last save
+
+## 0.1.6 (2026-11-01)
+
+- Assist Level Programming: holding UP or DOWN while editing a CURRENT or SPEED value now repeats the step, starting after 1 second and faster after 3 seconds
+- Switching STREET/RACE now shows "LOADING" with the target profile on the whole screen while the switch runs
+
+## 0.1.5 (2026-10-29)
+
+- New STREET/RACE assist profiles, with the same naming and behaviour as in the EggSPEED app (prepared for a later Bluetooth link between the two): a second, independent per-level table (current % and speed % for PAS 0-9) kept on the display and loaded onto the controller on demand
+- Assist Level Programming screen: a new "STREET/RACE" row under PAS 9 opens "USE RACE" YES/NO. The first time it is turned on, RACE starts as a copy of the controller's current (STREET) table. With USE RACE on, a RACE section follows (double line, "RACE" title, "SAVE RACE", PAS 0-9). SAVE RACE stores the RACE table on the display only - it reaches the controller only when you switch to RACE
+- Switching on the cockpit: hold UP and DOWN together for 3 seconds. The assist level goes to 0 (and stays there), the display reads the controller's current settings, swaps in only the per-level table, writes it and checks the controller's confirmation, with one retry. Afterwards "RACE MOD ACTIVE" / "STREET MOD ACTIVE" shows for 3 seconds, or "Write error" if it failed. While both buttons are held they do nothing else (no light toggle, no walk assist, no assist level change)
+- While RACE is active, both tables are view-only ("BEFORE EDIT SWITCH TO STREET"), and USE RACE cannot be turned off ("SWITCH TO STREET FIRST")
+- With USE RACE on, the top bar of cockpit layouts 1 and 2 shows the active profile, "S" or "R", between the voltage and the battery percentage
+- The STREET/RACE state is saved to flash at once on every change, in its own record, so it survives pulling the battery; no other saved setting is touched by this update
+- Before a firmware update with STREET/RACE in use, switch to STREET (see "Updating (Bluetooth)" in the README)
+
+## 0.1.4 (2026-09-25)
+
+- Fixed the TRIP distance: it was rounded to a whole meter on every 100 ms step, so anything below 18 km/h added nothing at all and 18-54 km/h always added exactly 1 m per step (a 7 km ride, mostly unassisted at low speed, showed as 2 km). It is now exact at any speed. The data screen's AVG and CONS, which are derived from it, are corrected too. ODO, the AV/AC rows and range were not affected. A TRIP counted with the old firmware stays wrong until the next "Trip reset"
+- TRIP on cockpit layouts 1 and 2 now shows one decimal digit (e.g. 12,3 km)
+- On the data screen (layout 3), changing the assist level now blanks the screen and shows the new level big in the middle with "PAS" underneath for 3 seconds (a further change swaps the digit at once and restarts the 3 seconds) - the data screen shows no assist level itself, so a change was invisible
+- Brightness menu: "Level" is no longer listed in AUTO mode (it only applies in MANUAL); in MANUAL the level now previews live while you scroll through it (cancelling restores the previous one); switching back to AUTO applies the light-dependent brightness at once
+- More accurate battery voltage measurement (0.1 V steps instead of about 0.26 V, and no more systematic under-reading of up to 0.26 V) - this also makes the Precise battery percentage follow the real voltage more closely
+
+## 0.1.3 (2026-09-19)
+
+- Data screen values are now remembered across power-off, like TRIP, and cleared only by "Trip reset": total time, maximum current, maximum power and energy used. Total time can no longer be smaller than moving time (on the first start after the update it begins from the already-saved moving time)
+- The data screen's CONS is now the average consumption over the TRIP shown on the same screen (energy used divided by trip distance), so the two always agree. The AV/AC row on the other two cockpit layouts is unchanged
+- "Rotate Screen 180deg" is now remembered after power-off
+- PAS Type A: the negative frame is 1px wider on the right and the four bars right of the number moved 1px right; the walk-assist figure moved 1px right in both types; "AC" and its value in the AV/AC row moved 1px right
+
+## 0.1.2 (2026-09-19)
+
+- Third cockpit layout: a plain data list (label on the left, value and unit on the right) with trip distance, average speed, top speed, total time, moving time, maximum current, maximum power, average consumption (Wh/km) and energy used (Wh). A short press of M now cycles through all three layouts
+- New "Rotate Screen 180deg" option (Cockpit menu): turns the whole display upside down, with UP and DOWN swapped to match. Deliberately not remembered - after a power cycle the display always starts in the normal orientation
+- The walking-person animation now also shows in PAS Type B while walk assist is held (previously only Type A did)
+
+
+## 0.1.1 (2026-09-18)
+
+- Fixed "Save failed" being shown for every save in the Assist Level Programming screen even though the data had been written: the controller confirms a write with its own short acknowledgement message, which the firmware did not expect. The save result is now based on that acknowledgement
+
+
+## 0.1.0 (2026-09-18)
+
+- New "Bafang Assist Level Programming" screen (main menu, between "Screen test" and "Info"): reads the controller's own per-assist-level (PAS 0-9) current and speed limits in percent, lets you edit them and writes them back to the controller with SAVE. It reads automatically on entry; editing and SAVE stay locked until a read has succeeded, so nothing empty is ever sent. A blinking underline shows a read or save in progress, and the result is shown as a notice
+- "Trip reset" now asks for confirmation (opens a "Confirm trip reset" step, like "Factory reset") so it cannot be triggered by accident
+- Fixed the menu selection marker sitting 1px too low in every menu
+- Boot screen: back to the smaller skull icon
+- Fixes from real-hardware testing: the PAS negative frame is 1px wider on the left, the PAS digit in Type A moved 1px, and the AV/AC row uses fixed positions so "AC" no longer drifts with the number of digits in AV
+
+
+## 0.0.9 (2026-09-17)
+
+- New complete "ODO" font (`font_odo`) replacing `font_label`/`font_il` in the TRIP/ODO/RANGE/AV/AC rows - full digit/punctuation/uppercase-letter set plus a new ">" arrow glyph, used for the new PAS arrow indicator below. Fixed a real unit-label bug found during the swap: the AV/AC row's unit was showing "Wkm"/"Wml" (missing the "h") instead of the correct "Whkm"/"Whml"
+- New, larger skull-and-crossbones boot screen icon
+- New large digit font (`font_bigspeed`, 30x56px) for the new cockpit layout below
+- New "PAS Type" setting (Cockpit menu): **Type A** is the existing PAS row (centered digit, side bar-graph, status icons above); **Type B** moves the PAS digit to the left with status icons beside it, and shows the assist level as a row of ">" arrows instead of the bar-graph. The bar-graph itself also changed: no more segment for PAS level 0, left side now shows 5 segments (levels 1-5) and right side 4 (levels 6-9)
+- "PAS bar" setting renamed to "PAS Icons" - now also controls the Type B arrow row (previously only the Type A bar-graph)
+- New "PAS Negativ" setting (Cockpit menu): draws the PAS digit as a cut-out inside a filled rectangle instead of normal ink, in both Type A and Type B
+- New second cockpit layout, toggled by a short press of the M button: merges the speed and power rows into one, showing only the whole-number speed as two large digits (no fraction, no unit, no power value) - the choice persists across power cycles
+- Settings menu visual overhaul: entries are now left-justified (previously centered for context rows), the selection marker moved to the screen edge, and a too-long selected entry now scrolls further left before disappearing
+- Safety fix: assist level now always resets to 0 on power-on, instead of restoring the last-used level from flash
+- Fixed RANGE showing near-zero while the battery percentage display showed a healthy value: the range estimator was using the controller's own raw (often inaccurate) reported percentage instead of whichever percentage is actually shown on screen (Standard or Precise)
+
+## 0.0.8 (2026-09-16)
+
+- Fixed a DFU (BLE OTA) update failure that could leave the device stuck in the bootloader when updating to a build smaller than the one already installed (a full SWD reflash of the identical image booted fine, isolating the fault to the DFU path specifically). The application image is now padded with 0xFF up to a fixed 80KB footprint before packaging for OTA, so every update occupies the same flash region regardless of its actual size - only the OTA package is affected, the SWD image is unchanged
+
+## 0.0.7 (2026-09-16)
+
+- Added smoothing (exponential moving average, ~8s time constant) to the Precise battery-percentage mode only - throttle-induced voltage sag no longer makes the indicator jump around. Standard mode and the displayed voltage remain fully raw/unfiltered
+
+## 0.0.6 (2026-09-16)
+
+- Fixed ODO (and Trip A) resetting to 0 on every power-off or settings-menu exit: the save path was reading from a legacy field this target never populates, instead of the real value our own code maintains
+- New "Battery percentage" menu option (Battery submenu) with two modes: **Standard** shows the controller's own reported percentage exactly as before; **Precise** computes the percentage locally from the display's own accurately-measured voltage and user-entered Max/Min battery voltage - for controllers whose own reported percentage runs inaccurate
+- Removed/neutralized inherited leftover code found to actively corrupt live telemetry (a fake motor simulator writing garbage into trip calculations, a legacy UART frame parser with a real buffer-overflow risk) plus further confirmed-dead code from the old screen layout. Code size dropped from 66,656 to 53,244 bytes flash (~13 KB recovered) as a direct result of this cleanup
+
+## 0.0.5 (2026-09-14)
+
+- "Trip reset" moved to the top level of the menu, directly under "Unit"
+- "Reset" submenu renamed to "Factory reset" (confirm button renamed to "Confirm factory reset")
+
+## 0.0.4 (2026-09-14)
+
+- Fixed a second light bug: `INIT_DISPLAY` (same bytes as "lights off") was being sent at the start of every poll cycle, not just once at startup - this raced against the real light command sent later in the same cycle and made the light blink continuously. Now sent only once at cold start or after a real communication timeout, matching EggSPEED's `DisplayStateMachine.kt` exactly
+
+## 0.0.3 (2026-09-14)
+
+- Fixed light bug: the light command is now sent unconditionally on every poll cycle (matching the verified behavior in EggSPEED), instead of only on state change - the previous version caused the light to blink once and turn off
+- New "Trip reset" menu action (resets trip distance/time/speed and trip average energy use, while preserving long-term learned averages)
+- Nudged AV/AC value positions (+1px right) and the km/h label (2px up)
+
+## 0.0.2 (2026-09-14)
+
+- Full km/h<->mph unit conversion: speed, distance (ODO/trip), and energy use (Wh/km<->Wh/mile) are converted at the display-formatting boundary, internal data stays in km/h and Wh/km
+- New standalone `font_il` font (only "i"/"l" glyphs) for the "ml"/"Wml" labels
+- New menu marker icon (`icon_menu_marker.xbm`) replacing the rectangle-highlight + inverted-text selection indicator - fixes a text-overlap glitch
+- Fixed `numeric2string()`: missing leading zero in decimal values (e.g. "1.1" -> "1.01")
+- Speed limit and the ODO menu editor remain deliberately km-only (a limitation of the numeric editor framework, no runtime-switchable unit)
+
+## 0.0.1 (2026-09-14)
+
+- First version with a version number and boot screen showing the full firmware name
+- Fixed voltage calibration: real P+ voltage divider determined to be ~402 kOhm (vs. the fork's assumed 300 kOhm), verified with a multimeter on hardware (58.8V actual vs. 44.4V displayed before the fix); added a "Voltage cal." menu field
+- Fixed a `uint8_t` overflow in the LCD contrast/brightness formula (`lcd_refresh()`) - backlight was rendering as binary instead of a smooth range
+- New "Screen test" menu item (fills the screen white)
+- Added "Dev Tomasz Pieczara" and "spotrobotics.app" to the Info menu
+- Finished the "Cockpit" menu tab (ON/OFF toggles for separators and the PAS bar)
+- PAS assist level bar changed to a bar-graph style (fills 0..active level)

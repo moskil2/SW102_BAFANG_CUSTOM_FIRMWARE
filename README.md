@@ -1,0 +1,410 @@
+# SW102 Modded Firmware for Bafang Controllers
+
+Custom firmware for the Bafang SW102 display, built for genuine Bafang mid-drive motors. A complete rewrite of the display's firmware - live telemetry, full assist control, lights, and a redesigned cockpit and menu, all running natively on your existing hardware. The end goal: full integration with the **EggSPEED** Android app ([GitHub](https://github.com/moskil2/EggSPEED), [Google Play](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)) over Bluetooth.
+
+[![Watch the demo video](https://img.youtube.com/vi/YrcN-K4wGN4/maxresdefault.jpg)](https://www.youtube.com/watch?v=YrcN-K4wGN4)
+
+| <img src="screenshots/boot.jpg" height="300" alt="Boot screen"> | <img src="screenshots/cockpit_a.jpg" height="300" alt="Main cockpit screen"> | <img src="screenshots/cockpit_big.jpg" height="300" alt="Cockpit, large speed"> | <img src="screenshots/data_screen.jpg" height="300" alt="Data screen"> |
+|:---:|:---:|:---:|:---:|
+| Boot screen | Cockpit (layout 1) | Cockpit (layout 2) | Data screen (layout 3) |
+
+| <img src="screenshots/cockpit_pas_b.jpg" height="300" alt="Cockpit, PAS Type B"> | <img src="screenshots/rotated.jpg" height="300" alt="Screen rotated 180 degrees"> | <img src="screenshots/menu_top.jpg" height="300" alt="Menu, top level"> | <img src="screenshots/pas_programming.jpg" height="300" alt="Assist Level Programming"> |
+|:---:|:---:|:---:|:---:|
+| PAS Type B | Rotated 180 degrees | Menu (top level) | Assist Level Programming |
+
+<img src="screenshots/buttons.png" width="100%" alt="SW102 buttons: what each button does">
+
+## Compatibility
+
+Uses the standard Bafang UART display protocol - the same protocol the stock display uses across this whole controller family:
+
+- BBS01 / BBS01B
+- BBS02 / BBS02B
+- BBSHD
+- M400
+- M420
+- M620 / G510 Ultra
+
+Tested on real hardware with a BBSHD controller.
+
+Controllers running the open source BBS-FW firmware are supported too: select "Controller: BBS-FW" in the menu.
+
+**With BBS-FW, holding UP + DOWN together for 3 seconds works like pressing the "SPORT" button: it switches between Standard and Sport. This works only if "Operation Mode Toggle" is set to "Sport Button" in the BBS-FW configuration tool.**
+
+## Programming the controller from the display
+
+This firmware lets you program the motor controller directly from the display. No laptop, cable or app is needed. Open the menu (hold M) and choose **"Bafang Assist Level Programming"**. First select your controller type in the menu: **"Controller: OEM"** or **"Controller: BBS-FW"**.
+
+<img src="screenshots/pas_programming.jpg" height="300" alt="Assist Level Programming on the display">
+
+### OEM (original Bafang firmware)
+
+- For each assist level PAS 0-9: **CURRENT** (current limit, in %) and **SPEED** (speed limit, in %)
+- **STREET/RACE**: a second, independent table (RACE) kept on the display. Turn it on with the "STREET/RACE" row (USE RACE). On the cockpit, hold UP + DOWN for 3 seconds to load STREET or RACE onto the controller
+
+### BBS-FW (open source firmware)
+
+- Two tables, **STANDARD** and **SPORT**, each with PAS 0-9: **CURRENT**, **CADENCE** and **SPEED** (in %)
+- Only these values are changed. All other BBS-FW settings stay as they are. To change them, use the **EggSPEED** Android app ([Google Play](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)), which supports BBS-FW
+- New values work at once, no restart needed
+- **Holding UP + DOWN for 3 seconds works like the "SPORT" button** (set "Operation Mode Toggle" to "Sport Button" in BBS-FW)
+
+### How to use it
+
+1. The display reads the controller when you open the screen. READ reads it again.
+2. UP/DOWN moves between rows. Press M on a value to edit it: UP/DOWN changes it (hold for faster change), M or PWR ends editing.
+3. Go to SAVE and press M. The display writes the values to the controller and shows "Saved!" when the controller confirms.
+4. PWR goes back without saving.
+
+## Cockpit (main screen)
+
+- Top bar: battery voltage (left) and battery percentage (right); with STREET/RACE turned on, the active profile ("S" or "R") in between
+- Speed: large digits with one decimal, unit label (km/h or mph)
+- Power: motor power in watts, or battery current in amps with one decimal (menu Cockpit -> "Power unit")
+- Assist level: two selectable layouts (Type A/B, see Menu below) - a centered number with a 10-segment bar-graph indicator, or the number to one side with the level shown as a row of arrows; status icons (headlight, Bluetooth connection, brake) either way, replaced by an animated walk-assist icon while walk assist is held
+- Trip distance (with one decimal), Odometer, and estimated Range rows
+- Average / current energy consumption row (Wh/km or Wh/mile)
+- Optional separator lines between rows (toggle in menu)
+- Three cockpit layouts, cycled with a short press of M: the standard layout above, a second one that merges the speed and power rows into one large whole-number speed readout, and a third "data screen" listing trip distance, average and top speed, total and moving time, maximum current and power, average consumption (Wh/km) and energy used (Wh). All of these values are remembered across power-off, like TRIP, and cleared only by "Trip reset" (consumption is the average over the trip: energy used divided by trip distance)
+- Controls: UP/DOWN short press = assist level up/down; UP long press = toggle headlight; DOWN long press (hold) = walk assist; M short press = cycle cockpit layout; M long press = open menu; UP + DOWN held together for 3 seconds = switch STREET/RACE (when turned on); with Controller = BBS-FW it switches Standard/Sport instead (the BBS-FW "Sport Button")
+
+## Menu
+
+- Unit switch (km/h / mph)
+- Wheel size selection
+- Speed limit (stored on the display, not sent to the controller yet)
+- Auto power off timer
+- Current calibration (adjustable display multiplier)
+- Voltage calibration (adjustable display multiplier)
+- ODO (manually set or correct the odometer)
+- Battery submenu: pack capacity (Wh) and battery percentage mode: Standard (shows the controller's own reported percentage as-is) or Precise (computes percentage locally from the display's accurately-measured voltage and user-entered max/min battery voltage, smoothed to avoid jumps under load) - for controllers whose own percentage reporting runs low
+- Brightness submenu: manual or automatic mode; in manual mode an adjustable level with live preview (the level entry is only listed in manual mode)
+- Cockpit submenu: toggle separators, toggle the assist-level indicator ("PAS Icons"), choose the assist-level layout ("PAS Type": Type A/B), toggle a negative/cut-out style for the assist-level digit ("PAS Negativ"), turn the whole display upside down ("Rotate Screen 180deg" - UP/DOWN are swapped to match; remembered after power-off), choose what the power row shows ("Power unit": W for watts or A for amps)
+- Screen test (fills the display white for a dead-pixel check)
+- Controller: OEM (default) or BBS-FW - picks how Assist Level Programming talks to the controller and what UP + DOWN does on the cockpit
+- Bafang Assist Level Programming: program the controller's assist levels, see "Programming the controller from the display" above
+- Info submenu: firmware version, hardware, developer credit, website, selected controller (with the BBS-FW version)
+- Trip reset (with confirmation) and Factory reset
+- Statistics (read-only): ODO, average speed, average efficiency, energy used, run time, maximum power and maximum current over the display's lifetime
+- Trip History: the last 10 trips saved by "Trip reset", newest first, with their riding time. Opens the values of a trip, and a single trip can be deleted from there
+
+## Installing (ST-Link)
+
+The simple, end-user version of the flashing procedure - tested on real hardware. No build tools needed if you're using a pre-built `.hex` release file.
+
+### What you need
+
+- An **ST-Link V2 programmer** (a cheap clone is fine, ~$5) - e.g. [search on Amazon](https://www.amazon.com/s?k=ST-Link+V2+programmer)
+- A Windows PC
+- **OpenOCD** - download [`xpack-openocd-0.12.0-7-win32-x64.zip`](https://github.com/xpack-dev-tools/openocd-xpack/releases/download/v0.12.0-7/xpack-openocd-0.12.0-7-win32-x64.zip) and unzip it to `C:\OpenOCD`. The zip contains its own folder, so OpenOCD ends up in `C:\OpenOCD\xpack-openocd-0.12.0-7\bin`
+- The **ST-Link driver** (see step 1 below)
+- The firmware `.hex` file: `SW102_BAF_0.2.3.hex` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - download it, create the folder `C:\SW102` and move the downloaded `.hex` there
+
+This single `.hex` file is a complete, ready-to-flash image - it already contains the bootloader, the Nordic SoftDevice (BLE stack), and the application, merged together at build time. You don't need to download anything else from any other repository.
+
+### 1. Install the ST-Link driver
+
+Plugging the ST-Link into USB alone is not enough - Windows needs the driver, or OpenOCD will fail with `Error: open failed`.
+
+1. Download **[STSW-LINK009](https://www.st.com/en/development-tools/stsw-link009.html)** from ST's website (ST asks you to log in or enter an e-mail address before downloading) and unzip the downloaded file (e.g. into your Downloads folder).
+2. Open the unzipped folder, find `stlink_winusb_install.bat`, right-click it, and choose **"Run as administrator"** from the menu.
+3. Unplug and replug the ST-Link.
+
+<img src="screenshots/stlink.jpg" width="300" alt="ST-Link V2 dongle with pinout labels and connected wires">
+
+### 2. Open the case and connect the SWD pins
+
+Open the SW102 display to expose the 4 programming pads: **GND, CLK (SWCLK), DIO (SWDIO), 3V3**.
+
+<table>
+<tr>
+<td>
+
+| SW102 pad | ST-Link V2 |
+|---|---|
+| GND | GND |
+| 3V3 | 3.3V |
+| CLK | SWCLK |
+| DIO | SWDIO |
+
+</td>
+<td>
+
+<img src="screenshots/PCB.jpeg" width="256" alt="SW102 main board with SWD pads labeled (3V3, DIO, CLK, GND)">
+
+</td>
+</tr>
+</table>
+
+#### HOW TO CONNECT
+
+<img src="screenshots/stlink_connect.png" width="100%" alt="ST-Link V2 wiring to the SW102 pads: SWDIO to DIO, GND to GND, SWCLK to CLK, 3.3V to 3V">
+
+You can power the display straight from the ST-Link's 3.3V pin for flashing - no battery or controller cable needed.
+
+#### HOW TO OPEN SW102
+
+The most reliable way to reach the four pads is to gently drill four small holes, side by side, with a 3mm bit, then solder onto the pads as shown below.
+
+I don't recommend opening the button panel by force instead - it's glued firmly, and forcing it open usually damages the case enough that it can no longer be glued back together to keep it waterproof. Sealing the drilled holes afterward with a dab of silicone, on the other hand, is easy.
+
+The blue tape in the photos is just there so the drill doesn't accidentally scratch the display.
+
+<table>
+<tr>
+<td align="center"><img src="screenshots/open_1a.jpg" height="140"></td>
+<td align="center"><img src="screenshots/open_1b.jpg" height="140"></td>
+<td align="center"><img src="screenshots/open_2.jpg" height="140"></td>
+<td align="center"><img src="screenshots/open_3.jpg" height="140"></td>
+</tr>
+<tr>
+<td align="center"><img src="screenshots/open_4.jpg" height="140"></td>
+<td align="center"><img src="screenshots/open_5.jpg" height="140"></td>
+<td align="center"><img src="screenshots/open_6.jpg" height="140"></td>
+</tr>
+</table>
+
+### 3. Flash the firmware
+
+1. Open a Command Prompt: press **Win+R**, type `cmd`, press Enter.
+2. Go into OpenOCD's `bin` folder (if you unzipped it somewhere else than `C:\OpenOCD`, adjust the path):
+   ```
+   cd C:\OpenOCD\xpack-openocd-0.12.0-7\bin
+   ```
+3. Run the erase command (paste it exactly, then press Enter):
+   ```
+   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; nrf51 mass_erase; shutdown"
+   ```
+4. Run the write-and-verify command (paste it exactly, then press Enter). If you saved the `.hex` somewhere other than `C:\SW102`, change the path, and write it with `/`, not `\` (OpenOCD drops `\`, so `C:\SW102\...` would not be found):
+   ```
+   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; flash write_image C:/SW102/SW102_BAF_0.2.3.hex; verify_image C:/SW102/SW102_BAF_0.2.3.hex; reset halt; resume; shutdown"
+   ```
+
+These must be two separate commands, run one after the other - see Troubleshooting below for why. If `verify_image` reports no errors, the flash succeeded.
+
+### 4. Check it worked
+
+Disconnect the ST-Link, connect normal power (battery or the controller cable), and press and hold the power button. You should see the boot screen with the firmware name and version.
+
+### Troubleshooting
+
+- **`Error: open failed`** - the ST-Link driver isn't installed, or the cable/USB connection is loose. Recheck step 1, unplug/replug.
+- **`Error: init mode failed` / no target detected** - almost always a bad physical connection on the CLK/DIO pads. Double-check the wires are making solid contact.
+- **Why two separate commands?** - Running erase and write in the same OpenOCD session fails with `error writing to flash`. The chip needs a reset in between, which is why the erase and the write-and-verify are two separate commands rather than one long one.
+
+## Updating (Bluetooth)
+
+Once the bootloader is installed (first flash via ST-Link), later firmware updates can be done wirelessly - no need to open the case again.
+
+[![Watch the Bluetooth update video](https://img.youtube.com/vi/GyanRPCOuG8/maxresdefault.jpg)](https://www.youtube.com/watch?v=GyanRPCOuG8)
+
+### What you need
+
+- The **nRF Connect** app by Nordic Semiconductor: [Android (Google Play)](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp), [iOS (App Store)](https://apps.apple.com/app/nrf-connect-for-mobile/id1054362403)
+- The firmware update package: `SW102_BAF_FW_0.2.3.zip` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - open the link on your phone and download it there
+
+### Before updating
+
+If you use STREET/RACE, switch to STREET first. A Bluetooth update is meant to keep the saved settings, but a full ST-Link flash erases them. If RACE were active at that point, the controller would keep the RACE table and the STREET table, stored only on the display, would be lost. With STREET active nothing important can be lost: at worst the RACE table, which starts again as a copy of STREET when you turn USE RACE back on.
+
+### Steps
+
+1. With the display powered on, hold **M + PWR together for at least 8 seconds**, until the screen goes dark - this confirms it's now in bootloader DFU mode.
+2. Open **nRF Connect** on your phone, scan for Bluetooth devices, and connect to **"SW102_DFU"**.
+3. Start a DFU update in the app and select the `.zip` file (don't unzip it first).
+4. Wait for the upload to finish.
+5. Power-cycle the display and turn it back on normally.
+
+### Troubleshooting
+
+- **Boots back into DFU mode instead of the app** - hold the power button longer (up to 10 seconds) on the first boot after an update; this is a known quirk of the bootloader.
+- **The display does not respond and M + PWR does nothing** - the bootloader can still be reached: cut the display's power for about 10 seconds (switch the battery off or unplug the display), restore power, then press and hold **M**, press **PWR** and keep holding both until **"SW102_DFU"** shows up in nRF Connect. Then install the update as described above.
+
+## Preview (simulation)
+
+<table>
+<tr>
+<td>
+
+<img src="font_speed_work/cockpit_simulation_natural.png" alt="SW102 cockpit simulation - speed, power, assist level, trip/odo/range" height="400">
+
+</td>
+<td>
+
+<img src="screenshots/emulator.png" alt="SW102 emu-rs terminal emulator running the real firmware" height="400">
+
+</td>
+</tr>
+</table>
+
+Pixel-accurate cockpit layout simulation using the
+hand-drawn fonts, used to iterate on the UI before touching C code.
+
+## Status
+
+Firmware tested on real hardware (flashed via SWD/OpenOCD and an ST-Link V2). Current version `SW102_BAF_0.2.3`. Working on hardware: Bafang UART protocol (telemetry, lights, assist), current and voltage calibration, trip/odo with reset, km/h<->mph unit switch, cockpit layouts and data screen, power unit W/A, Assist Level Programming, STREET/RACE profiles, menu with a marker icon instead of highlight, boot screen with version number. Versioning convention: `SW102_BAF_X.Y.Z`, each version flashed to hardware is saved as its own `.hex` file (never overwritten). Builds cleanly on both toolchains (ARM and emulator). Details and history in `CHANGELOG.md`.
+
+## License and provenance
+
+© 2026 Tomasz Pieczara. All rights reserved. See `LICENSE`. The source code is not published.
+
+The full `.hex` file also contains third-party components (bootloader, Nordic SoftDevice), see `THIRD-PARTY.md`.
+
+**Fonts.** All fonts in this firmware were hand-drawn by Tomasz Pieczara. © Tomasz Pieczara, all rights reserved.
+
+## Resources
+
+Current build (v0.2.3) flash/RAM usage on the nRF51822:
+
+| Resource | Budget | Used | Free |
+|---|---|---|---|
+| Flash (application region) | 130,048 B (127.0 KB) | 68,400 B (66.8 KB) | 61,648 B (60.2 KB, 47.4%) |
+| RAM (after SoftDevice reservation) | 21,504 B (21.0 KB) | 6,620 B (6.5 KB) | 14,884 B (14.5 KB, 69.2%) |
+
+RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same free space, not counted separately.
+
+## Changelog
+
+Version history for the `SW102_BAF_X.Y.Z` firmware.
+
+### 0.2.3 (2026-11-24)
+
+- New "Power unit" setting in the Cockpit menu: the power row shows motor power in watts (W, default) or battery current in amps with one decimal (A), e.g. "16.5 A". The controller reports current in 0.5 A steps, adjusted by "Current cal."
+- New, bolder "W" unit letter
+
+### 0.2.0 (2026-11-15)
+
+- New "Controller" menu setting: OEM (default) or BBS-FW. Select BBS-FW only if your controller runs the open source BBS-FW firmware. With OEM everything works as before
+- With BBS-FW, Assist Level Programming reads and writes the BBS-FW configuration and shows both of its tables, STANDARD and SPORT, with CURRENT, CADENCE and SPEED for PAS 0-9. Saving changes only these values, all other BBS-FW settings stay as they are. New values apply at once, no restart needed
+- With BBS-FW, holding UP + DOWN for 3 seconds switches Standard/Sport. This is the display's "Sport Button": set "Operation Mode Toggle" to "Sport Button" in the BBS-FW configuration tool. With "Off" the display shows "SPORT IS OFF IN BBS-FW". With "Lights Button" or "PAS x + Lights Button" the mode is switched with the light (UP long press), as set in BBS-FW. STREET/RACE is not used with BBS-FW
+- Info: new last line with the selected controller and the BBS-FW version read from the controller
+- Assist Level Programming: the double line above RACE no longer touches the row above it
+- The boot screen shows the correct version number (0.1.9 showed V0.1.8)
+
+### 0.1.9 (2026-11-03)
+
+- Trip History list: each row now shows the trip riding time instead of its distance, for example "1. 1h 45min"
+- Single trips can be deleted: open a trip, press DOWN to show "Delete this trip" (UP goes back), then press M. The trip is deleted at once and the following trips move up one number
+- Long menu items now scroll about a third faster
+
+### 0.1.8 (2026-11-02)
+
+- New "Trip History" menu item under "Trip reset": the last 10 trips, newest first. "Trip reset" (now "Confirm Trip Reset and Save") saves the trip before clearing TRIP; a reset at zero distance saves nothing, and with 10 trips saved the oldest is replaced. M opens a trip with the same values as the data screen, PWR goes back. Cleared by "Factory reset"
+- Statistics: 2 px separator lines
+
+### 0.1.7 (2026-11-02)
+
+- New "Statistics" menu item under "Trip reset": ODO, average speed, average efficiency, energy used, run time, maximum power and maximum current over the display's lifetime. UP/DOWN scrolls, PWR goes back. Cleared only by "Factory reset"; "Trip reset" and editing ODO by hand leave them unchanged. They start from zero after this update
+- Run time counts while the display is on and pauses after 30 minutes without moving
+- ODO, TRIP, energy counters and statistics are now also saved every minute while riding and 30 seconds after stopping. Switching the battery off without powering off the display no longer loses everything since the last save
+
+### 0.1.6 (2026-11-01)
+
+- Assist Level Programming: holding UP or DOWN while editing a CURRENT or SPEED value now repeats the step, starting after 1 second and faster after 3 seconds
+- Switching STREET/RACE now shows "LOADING" with the target profile on the whole screen while the switch runs
+
+### 0.1.5 (2026-10-29)
+
+- New STREET/RACE assist profiles, with the same naming and behaviour as in the EggSPEED app (prepared for a later Bluetooth link between the two): a second, independent per-level table (current % and speed % for PAS 0-9) kept on the display and loaded onto the controller on demand
+- Assist Level Programming screen: a new "STREET/RACE" row under PAS 9 opens "USE RACE" YES/NO. The first time it is turned on, RACE starts as a copy of the controller's current (STREET) table. With USE RACE on, a RACE section follows (double line, "RACE" title, "SAVE RACE", PAS 0-9). SAVE RACE stores the RACE table on the display only - it reaches the controller only when you switch to RACE
+- Switching on the cockpit: hold UP and DOWN together for 3 seconds. The assist level goes to 0 (and stays there), the display reads the controller's current settings, swaps in only the per-level table, writes it and checks the controller's confirmation, with one retry. Afterwards "RACE MOD ACTIVE" / "STREET MOD ACTIVE" shows for 3 seconds, or "Write error" if it failed. While both buttons are held they do nothing else (no light toggle, no walk assist, no assist level change)
+- While RACE is active, both tables are view-only ("BEFORE EDIT SWITCH TO STREET"), and USE RACE cannot be turned off ("SWITCH TO STREET FIRST")
+- With USE RACE on, the top bar of cockpit layouts 1 and 2 shows the active profile, "S" or "R", between the voltage and the battery percentage
+- The STREET/RACE state is saved to flash at once on every change, in its own record, so it survives pulling the battery; no other saved setting is touched by this update
+- Before a firmware update with STREET/RACE in use, switch to STREET (see "Updating (Bluetooth)")
+
+### 0.1.4 (2026-09-25)
+
+- Fixed the TRIP distance: it was rounded to a whole meter on every 100 ms step, so anything below 18 km/h added nothing at all and 18-54 km/h always added exactly 1 m per step (a 7 km ride, mostly unassisted at low speed, showed as 2 km). It is now exact at any speed. The data screen's AVG and CONS, which are derived from it, are corrected too. ODO, the AV/AC rows and range were not affected. A TRIP counted with the old firmware stays wrong until the next "Trip reset"
+- TRIP on cockpit layouts 1 and 2 now shows one decimal digit (e.g. 12,3 km)
+- On the data screen (layout 3), changing the assist level now blanks the screen and shows the new level big in the middle with "PAS" underneath for 3 seconds (a further change swaps the digit at once and restarts the 3 seconds) - the data screen shows no assist level itself, so a change was invisible
+- Brightness menu: "Level" is no longer listed in AUTO mode (it only applies in MANUAL); in MANUAL the level now previews live while you scroll through it (cancelling restores the previous one); switching back to AUTO applies the light-dependent brightness at once
+- More accurate battery voltage measurement (0.1 V steps instead of about 0.26 V, and no more systematic under-reading of up to 0.26 V) - this also makes the Precise battery percentage follow the real voltage more closely
+
+### 0.1.3 (2026-09-19)
+
+- Data screen values are now remembered across power-off, like TRIP, and cleared only by "Trip reset": total time, maximum current, maximum power and energy used. Total time can no longer be smaller than moving time (on the first start after the update it begins from the already-saved moving time)
+- The data screen's CONS is now the average consumption over the TRIP shown on the same screen (energy used divided by trip distance), so the two always agree. The AV/AC row on the other two cockpit layouts is unchanged
+- "Rotate Screen 180deg" is now remembered after power-off
+- PAS Type A: the negative frame is 1px wider on the right and the four bars right of the number moved 1px right; the walk-assist figure moved 1px right in both types; "AC" and its value in the AV/AC row moved 1px right
+
+### 0.1.2 (2026-09-19)
+
+- Third cockpit layout: a plain data list (label on the left, value and unit on the right) with trip distance, average speed, top speed, total time, moving time, maximum current, maximum power, average consumption (Wh/km) and energy used (Wh). A short press of M now cycles through all three layouts
+- New "Rotate Screen 180deg" option (Cockpit menu): turns the whole display upside down, with UP and DOWN swapped to match. Deliberately not remembered - after a power cycle the display always starts in the normal orientation
+- The walking-person animation now also shows in PAS Type B while walk assist is held (previously only Type A did)
+
+
+### 0.1.1 (2026-09-18)
+
+- Fixed "Save failed" being shown for every save in the Assist Level Programming screen even though the data had been written: the controller confirms a write with its own short acknowledgement message, which the firmware did not expect. The save result is now based on that acknowledgement
+
+
+### 0.1.0 (2026-09-18)
+
+- New "Bafang Assist Level Programming" screen (main menu, between "Screen test" and "Info"): reads the controller's own per-assist-level (PAS 0-9) current and speed limits in percent, lets you edit them and writes them back to the controller with SAVE. It reads automatically on entry; editing and SAVE stay locked until a read has succeeded, so nothing empty is ever sent. A blinking underline shows a read or save in progress, and the result is shown as a notice
+- "Trip reset" now asks for confirmation (opens a "Confirm trip reset" step, like "Factory reset") so it cannot be triggered by accident
+- Fixed the menu selection marker sitting 1px too low in every menu
+- Boot screen: back to the smaller skull icon
+- Fixes from real-hardware testing: the PAS negative frame is 1px wider on the left, the PAS digit in Type A moved 1px, and the AV/AC row uses fixed positions so "AC" no longer drifts with the number of digits in AV
+
+
+### 0.0.9 (2026-09-17)
+
+- New complete "ODO" font (`font_odo`) replacing `font_label`/`font_il` in the TRIP/ODO/RANGE/AV/AC rows - full digit/punctuation/uppercase-letter set plus a new ">" arrow glyph, used for the new PAS arrow indicator below. Fixed a real unit-label bug found during the swap: the AV/AC row's unit was showing "Wkm"/"Wml" (missing the "h") instead of the correct "Whkm"/"Whml"
+- New, larger skull-and-crossbones boot screen icon
+- New large digit font (`font_bigspeed`, 30x56px) for the new cockpit layout below
+- New "PAS Type" setting (Cockpit menu): **Type A** is the existing PAS row (centered digit, side bar-graph, status icons above); **Type B** moves the PAS digit to the left with status icons beside it, and shows the assist level as a row of ">" arrows instead of the bar-graph. The bar-graph itself also changed: no more segment for PAS level 0, left side now shows 5 segments (levels 1-5) and right side 4 (levels 6-9)
+- "PAS bar" setting renamed to "PAS Icons" - now also controls the Type B arrow row (previously only the Type A bar-graph)
+- New "PAS Negativ" setting (Cockpit menu): draws the PAS digit as a cut-out inside a filled rectangle instead of normal ink, in both Type A and Type B
+- New second cockpit layout, toggled by a short press of the M button: merges the speed and power rows into one, showing only the whole-number speed as two large digits (no fraction, no unit, no power value) - the choice persists across power cycles
+- Settings menu visual overhaul: entries are now left-justified (previously centered for context rows), the selection marker moved to the screen edge, and a too-long selected entry now scrolls further left before disappearing
+- Safety fix: assist level now always resets to 0 on power-on, instead of restoring the last-used level from flash
+- Fixed RANGE showing near-zero while the battery percentage display showed a healthy value: the range estimator was using the controller's own raw (often inaccurate) reported percentage instead of whichever percentage is actually shown on screen (Standard or Precise)
+
+### 0.0.8 (2026-09-16)
+
+- Fixed a DFU (BLE OTA) update failure that could leave the device stuck in the bootloader when updating to a build smaller than the one already installed (a full SWD reflash of the identical image booted fine, isolating the fault to the DFU path specifically). The application image is now padded with 0xFF up to a fixed 80KB footprint before packaging for OTA, so every update occupies the same flash region regardless of its actual size - only the OTA package is affected, the SWD image is unchanged
+
+### 0.0.7 (2026-09-16)
+
+- Added smoothing (exponential moving average, ~8s time constant) to the Precise battery-percentage mode only - throttle-induced voltage sag no longer makes the indicator jump around. Standard mode and the displayed voltage remain fully raw/unfiltered
+
+### 0.0.6 (2026-09-16)
+
+- Fixed ODO (and Trip A) resetting to 0 on every power-off or settings-menu exit: the save path was reading from a legacy field this target never populates, instead of the real value our own code maintains
+- New "Battery percentage" menu option (Battery submenu) with two modes: **Standard** shows the controller's own reported percentage exactly as before; **Precise** computes the percentage locally from the display's own accurately-measured voltage and user-entered Max/Min battery voltage - for controllers whose own reported percentage runs inaccurate
+- Removed/neutralized inherited leftover code found to actively corrupt live telemetry (a fake motor simulator writing garbage into trip calculations, a legacy UART frame parser with a real buffer-overflow risk) plus further confirmed-dead code from the old screen layout. Code size dropped from 66,656 to 53,244 bytes flash (~13 KB recovered) as a direct result of this cleanup
+
+### 0.0.5 (2026-09-14)
+
+- "Trip reset" moved to the top level of the menu, directly under "Unit"
+- "Reset" submenu renamed to "Factory reset" (confirm button renamed to "Confirm factory reset")
+
+### 0.0.4 (2026-09-14)
+
+- Fixed a second light bug: `INIT_DISPLAY` (same bytes as "lights off") was being sent at the start of every poll cycle, not just once at startup - this raced against the real light command sent later in the same cycle and made the light blink continuously. Now sent only once at cold start or after a real communication timeout, matching EggSPEED's `DisplayStateMachine.kt` exactly
+
+### 0.0.3 (2026-09-14)
+
+- Fixed light bug: the light command is now sent unconditionally on every poll cycle (matching the verified behavior in EggSPEED), instead of only on state change - the previous version caused the light to blink once and turn off
+- New "Trip reset" menu action (resets trip distance/time/speed and trip average energy use, while preserving long-term learned averages)
+- Nudged AV/AC value positions (+1px right) and the km/h label (2px up)
+
+### 0.0.2 (2026-09-14)
+
+- Full km/h<->mph unit conversion: speed, distance (ODO/trip), and energy use (Wh/km<->Wh/mile) are converted at the display-formatting boundary, internal data stays in km/h and Wh/km
+- New standalone `font_il` font (only "i"/"l" glyphs) for the "ml"/"Wml" labels
+- New menu marker icon (`icon_menu_marker.xbm`) replacing the rectangle-highlight + inverted-text selection indicator - fixes a text-overlap glitch
+- Fixed `numeric2string()`: missing leading zero in decimal values (e.g. "1.1" -> "1.01")
+- Speed limit and the ODO menu editor remain deliberately km-only (a limitation of the numeric editor framework, no runtime-switchable unit)
+
+### 0.0.1 (2026-09-14)
+
+- First version with a version number and boot screen showing the full firmware name
+- Fixed voltage calibration: real P+ voltage divider determined to be ~402 kOhm (vs. the fork's assumed 300 kOhm), verified with a multimeter on hardware (58.8V actual vs. 44.4V displayed before the fix); added a "Voltage cal." menu field
+- Fixed a `uint8_t` overflow in the LCD contrast/brightness formula (`lcd_refresh()`) - backlight was rendering as binary instead of a smooth range
+- New "Screen test" menu item (fills the screen white)
+- Added "Dev Tomasz Pieczara" and "spotrobotics.app" to the Info menu
+- Finished the "Cockpit" menu tab (ON/OFF toggles for separators and the PAS bar)
+- PAS assist level bar changed to a bar-graph style (fills 0..active level)

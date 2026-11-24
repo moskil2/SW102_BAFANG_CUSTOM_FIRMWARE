@@ -1,0 +1,15 @@
+Copyright (c) 2026 Tomasz Pieczara. All rights reserved.
+
+The SW102 firmware files published in this repository's releases (the "Firmware") and the contents of this repository are proprietary.
+
+You may download the Firmware and install it on Bafang SW102 displays that you own, for your personal use.
+
+You may not, without prior written permission of the author:
+- modify, adapt or translate the Firmware;
+- reverse engineer, decompile or disassemble the Firmware, except where applicable law does not allow this restriction;
+- redistribute, sell, rent or publish the Firmware or any part of it, including its fonts and images;
+- use the Firmware in a commercial product or service.
+
+Third-party components included in the release files are licensed under their own terms, see THIRD-PARTY.md.
+
+THE FIRMWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. The author is not liable for any damage to the display, the motor controller, the bicycle or other property, or for any injury, resulting from its use.
