@@ -269,6 +269,7 @@ Version history for the `SW102_BAF_X.Y.Z` firmware.
 
 ### 0.2.3 (2026-11-24)
 
+- The firmware application was rewritten from scratch to optimize performance and reduce memory use: flash usage down by 2,292 B (3.2%, from 70,692 B to 68,400 B), RAM usage down by 812 B (10.9%, from 7,432 B to 6,620 B) compared to 0.2.0
 - New "Power unit" setting in the Cockpit menu: the power row shows motor power in watts (W, default) or battery current in amps with one decimal (A), e.g. "16.5 A". The controller reports current in 0.5 A steps, adjusted by "Current cal."
 - New, bolder "W" unit letter
 
