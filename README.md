@@ -14,6 +14,12 @@ Custom firmware for the Bafang SW102 display, built for genuine Bafang mid-drive
 
 <img src="screenshots/buttons.png" width="100%" alt="SW102 buttons: what each button does">
 
+## Cockpit at a glance
+
+<img src="screenshots/cockpit_overview.png" width="100%" alt="SW102 cockpit with every indicator explained">
+
+**User manual (PDF):** [SW102_Manual.pdf](SW102_Manual.pdf) - every screen of the display with what each value means and how each setting works, plus calibration guides and the error code list. It describes firmware 0.2.4.
+
 ## Compatibility
 
 Uses the standard Bafang UART display protocol - the same protocol the stock display uses across this whole controller family:
