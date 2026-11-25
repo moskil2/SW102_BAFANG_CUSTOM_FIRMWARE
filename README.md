@@ -104,7 +104,7 @@ The simple, end-user version of the flashing procedure - tested on real hardware
 - A Windows PC
 - **OpenOCD** - download [`xpack-openocd-0.12.0-7-win32-x64.zip`](https://github.com/xpack-dev-tools/openocd-xpack/releases/download/v0.12.0-7/xpack-openocd-0.12.0-7-win32-x64.zip) and unzip it to `C:\OpenOCD`. The zip contains its own folder, so OpenOCD ends up in `C:\OpenOCD\xpack-openocd-0.12.0-7\bin`
 - The **ST-Link driver** (see step 1 below)
-- The firmware `.hex` file: `SW102_BAF_0.2.3.hex` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - download it, create the folder `C:\SW102` and move the downloaded `.hex` there
+- The firmware `.hex` file: `SW102_BAF_0.2.4.hex` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - download it, create the folder `C:\SW102` and move the downloaded `.hex` there
 
 This single `.hex` file is a complete, ready-to-flash image - it already contains the bootloader, the Nordic SoftDevice (BLE stack), and the application, merged together at build time. You don't need to download anything else from any other repository.
 
@@ -183,7 +183,7 @@ The blue tape in the photos is just there so the drill doesn't accidentally scra
    ```
 4. Run the write-and-verify command (paste it exactly, then press Enter). If you saved the `.hex` somewhere other than `C:\SW102`, change the path, and write it with `/`, not `\` (OpenOCD drops `\`, so `C:\SW102\...` would not be found):
    ```
-   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; flash write_image C:/SW102/SW102_BAF_0.2.3.hex; verify_image C:/SW102/SW102_BAF_0.2.3.hex; reset halt; resume; shutdown"
+   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; flash write_image C:/SW102/SW102_BAF_0.2.4.hex; verify_image C:/SW102/SW102_BAF_0.2.4.hex; reset halt; resume; shutdown"
    ```
 
 These must be two separate commands, run one after the other - see Troubleshooting below for why. If `verify_image` reports no errors, the flash succeeded.
@@ -207,7 +207,7 @@ Once the bootloader is installed (first flash via ST-Link), later firmware updat
 ### What you need
 
 - The **nRF Connect** app by Nordic Semiconductor: [Android (Google Play)](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp), [iOS (App Store)](https://apps.apple.com/app/nrf-connect-for-mobile/id1054362403)
-- The firmware update package: `SW102_BAF_FW_0.2.3.zip` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - open the link on your phone and download it there
+- The firmware update package: `SW102_BAF_FW_0.2.4.zip` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - open the link on your phone and download it there
 
 ### Before updating
 
@@ -248,7 +248,7 @@ hand-drawn fonts, used to iterate on the UI before touching C code.
 
 ## Status
 
-Firmware tested on real hardware (flashed via SWD/OpenOCD and an ST-Link V2). Current version `SW102_BAF_0.2.3`. Working on hardware: Bafang UART protocol (telemetry, lights, assist), current and voltage calibration, trip/odo with reset, km/h<->mph unit switch, cockpit layouts and data screen, power unit W/A, Assist Level Programming, STREET/RACE profiles, menu with a marker icon instead of highlight, boot screen with version number. Versioning convention: `SW102_BAF_X.Y.Z`, each version flashed to hardware is saved as its own `.hex` file (never overwritten). Builds cleanly on both toolchains (ARM and emulator). Details and history in `CHANGELOG.md`.
+Firmware tested on real hardware (flashed via SWD/OpenOCD and an ST-Link V2). Current version `SW102_BAF_0.2.4`. Working on hardware: Bafang UART protocol (telemetry, lights, assist), current and voltage calibration, trip/odo with reset, km/h<->mph unit switch, cockpit layouts and data screen, power unit W/A, Assist Level Programming, STREET/RACE profiles, menu with a marker icon instead of highlight, boot screen with version number. Versioning convention: `SW102_BAF_X.Y.Z`, each version flashed to hardware is saved as its own `.hex` file (never overwritten). Builds cleanly on both toolchains (ARM and emulator). Details and history in `CHANGELOG.md`.
 
 ## License and provenance
 
@@ -260,11 +260,11 @@ The full `.hex` file also contains third-party components (bootloader, Nordic So
 
 ## Resources
 
-Current build (v0.2.3) flash/RAM usage on the nRF51822:
+Current build (v0.2.4) flash/RAM usage on the nRF51822:
 
 | Resource | Budget | Used | Free |
 |---|---|---|---|
-| Flash (application region) | 130,048 B (127.0 KB) | 68,400 B (66.8 KB) | 61,648 B (60.2 KB, 47.4%) |
+| Flash (application region) | 130,048 B (127.0 KB) | 69,556 B (67.9 KB) | 60,492 B (59.1 KB, 46.5%) |
 | RAM (after SoftDevice reservation) | 21,504 B (21.0 KB) | 6,620 B (6.5 KB) | 14,884 B (14.5 KB, 69.2%) |
 
 RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same free space, not counted separately.
@@ -272,6 +272,14 @@ RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same f
 ## Changelog
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
+
+### 0.2.4 (2026-11-25)
+
+- Error codes: when the controller reports an error, an error icon appears on the cockpit. New menu item "Active Errors" (above Factory reset) shows the error code with a short description, or "No Errors"
+- Error 30 is shown when the controller sends no data for more than 2 seconds
+- Fixed: errors 06, 07, 22, 23 and 26 showed the brake icon
+- The display now waits 1 second for a controller reply (was 10 seconds), so error 30 clears about 1 second after the connection returns
+- "Power unit" menu values renamed to "Watt" / "Ampere"
 
 ### 0.2.3 (2026-11-24)
 

@@ -2,6 +2,14 @@
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
 
+## 0.2.4 (2026-11-25)
+
+- Error codes: when the controller reports an error, an error icon appears on the cockpit. New menu item "Active Errors" (above Factory reset) shows the error code with a short description, or "No Errors"
+- Error 30 is shown when the controller sends no data for more than 2 seconds
+- Fixed: errors 06, 07, 22, 23 and 26 showed the brake icon
+- The display now waits 1 second for a controller reply (was 10 seconds), so error 30 clears about 1 second after the connection returns
+- "Power unit" menu values renamed to "Watt" / "Ampere"
+
 ## 0.2.3 (2026-11-24)
 
 - The firmware application was rewritten from scratch to optimize performance and reduce memory use: flash usage down by 2,292 B (3.2%, from 70,692 B to 68,400 B), RAM usage down by 812 B (10.9%, from 7,432 B to 6,620 B) compared to 0.2.0
