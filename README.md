@@ -269,6 +269,8 @@ Current build (v0.2.4) flash/RAM usage on the nRF51822:
 
 RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same free space, not counted separately.
 
+Source code size (firmware application C files and headers, without the Nordic SDK, its configuration and font bitmaps): v0.2.4 - about 9,300 lines in 67 files; v0.2.0, the last version built on the fork code - about 14,000 lines in 71 files.
+
 ## Changelog
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
