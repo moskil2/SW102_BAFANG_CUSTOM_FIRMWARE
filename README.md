@@ -280,6 +280,15 @@ Source code size (firmware application C files and headers, without the Nordic S
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
 
+### 0.3.0 (2026-11-26)
+
+- New menu item "Logbook" (above Factory reset): records why the display switched itself off - AUTO OFF (automatic power off, with the set time) or a firmware fault (ERROR / HARDFAULT with code and program address) - with the ODO and the time since switch-on. Up to 32 entries, newest first; when full it starts again. Factory reset clears it. A firmware update over Bluetooth may clear it.
+- Automatic power off: every button press now restarts the countdown (before, some presses were not counted). Phone commands do not restart it.
+
+### 0.2.9 (2026-11-26)
+
+- Faster Bluetooth link to the phone: saving controller settings from EggSPEED no longer shows "No response" although the values were saved.
+
 ### 0.2.8 (2026-11-26)
 
 - EggSPEED connection: the EggSPEED app (connection type "SW102_BT", version 0.7.8 or newer) connects to the display over Bluetooth. The display keeps controlling the bike; the app shows live data and can change the assist level, light and Normal/Sport (STREET/RACE with OEM).
