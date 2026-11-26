@@ -273,6 +273,12 @@ RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same f
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
 
+### 0.2.8 (2026-11-26)
+
+- EggSPEED connection: the EggSPEED app (connection type "SW102_BT", version 0.7.8 or newer) connects to the display over Bluetooth. The display keeps controlling the bike; the app shows live data and can change the assist level, light and Normal/Sport (STREET/RACE with OEM).
+- Controller programming from the phone: EggSPEED reads and writes the controller settings through the display. The display shows "PHONE PROGRAMMING", plus "SAVING DATA" while saving, and returns to the cockpit afterwards.
+- Bluetooth name changed from "OS-EBike" to "SW102".
+
 ### 0.2.4 (2026-11-25)
 
 - Error codes: when the controller reports an error, an error icon appears on the cockpit. New menu item "Active Errors" (above Factory reset) shows the error code with a short description, or "No Errors"
