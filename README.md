@@ -1,6 +1,6 @@
 # SW102 Modded Firmware for Bafang Controllers
 
-Custom firmware for the Bafang SW102 display, built for genuine Bafang mid-drive motors. A complete rewrite of the display's firmware - live telemetry, full assist control, lights, and a redesigned cockpit and menu, all running natively on your existing hardware. The end goal: full integration with the **EggSPEED** Android app ([GitHub](https://github.com/moskil2/EggSPEED), [Google Play](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)) over Bluetooth.
+Custom firmware for the Bafang SW102 display, built for genuine Bafang mid-drive motors. A complete rewrite of the display's firmware - live telemetry, full assist control, lights, and a redesigned cockpit and menu, all running natively on your existing hardware. The display firmware already includes the Bluetooth connection to the **EggSPEED** Android app ([GitHub](https://github.com/moskil2/EggSPEED), [Google Play](https://play.google.com/store/apps/details?id=app.spotrobotics.eggspeed)): live data, assist level, light, Normal/Sport and controller programming from the phone. The EggSPEED version with this connection is not on Google Play yet.
 
 [![Watch the demo video](https://img.youtube.com/vi/YrcN-K4wGN4/maxresdefault.jpg)](https://www.youtube.com/watch?v=YrcN-K4wGN4)
 
@@ -85,7 +85,7 @@ This firmware lets you program the motor controller directly from the display. N
 - ODO (manually set or correct the odometer)
 - Battery submenu: pack capacity (Wh) and battery percentage mode: Standard (shows the controller's own reported percentage as-is) or Precise (computes percentage locally from the display's accurately-measured voltage and user-entered max/min battery voltage, smoothed to avoid jumps under load) - for controllers whose own percentage reporting runs low
 - Brightness submenu: manual or automatic mode; in manual mode an adjustable level with live preview (the level entry is only listed in manual mode)
-- Cockpit submenu: toggle separators, toggle the assist-level indicator ("PAS Icons"), choose the assist-level layout ("PAS Type": Type A/B), toggle a negative/cut-out style for the assist-level digit ("PAS Negativ"), turn the whole display upside down ("Rotate Screen 180deg" - UP/DOWN are swapped to match; remembered after power-off), choose what the power row shows ("Power unit": W for watts or A for amps)
+- Cockpit submenu: toggle separators, toggle the assist-level indicator ("PAS Bars"), choose the assist-level layout ("PAS Type": Type A/B), show the new assist level full screen for 3 seconds after a change on layouts 1 and 2 ("PAS Popup", OFF by default; the data screen always does), toggle a negative/cut-out style for the assist-level digit ("PAS Negativ"), turn the whole display upside down ("Rotate Screen 180deg" - UP/DOWN are swapped to match; remembered after power-off), choose what the power row shows ("Power unit": W for watts or A for amps)
 - Screen test (fills the display white for a dead-pixel check)
 - Controller: OEM (default) or BBS-FW - picks how Assist Level Programming talks to the controller and what UP + DOWN does on the cockpit
 - Bafang Assist Level Programming: program the controller's assist levels, see "Programming the controller from the display" above
@@ -93,6 +93,8 @@ This firmware lets you program the motor controller directly from the display. N
 - Trip reset (with confirmation) and Factory reset
 - Statistics (read-only): ODO, average speed, average efficiency, energy used, run time, maximum power and maximum current over the display's lifetime
 - Trip History: the last 10 trips saved by "Trip reset", newest first, with their riding time. Opens the values of a trip, and a single trip can be deleted from there
+- Active Errors: the controller's current error code with a short description, or "No Errors"
+- Logbook: why the display switched itself off (AUTO OFF with the set time, or a firmware fault), with the ODO and the time since switch-on; "Clear" deletes the entries, "Events" shows them
 
 ## Installing (ST-Link)
 
@@ -104,7 +106,7 @@ The simple, end-user version of the flashing procedure - tested on real hardware
 - A Windows PC
 - **OpenOCD** - download [`xpack-openocd-0.12.0-7-win32-x64.zip`](https://github.com/xpack-dev-tools/openocd-xpack/releases/download/v0.12.0-7/xpack-openocd-0.12.0-7-win32-x64.zip) and unzip it to `C:\OpenOCD`. The zip contains its own folder, so OpenOCD ends up in `C:\OpenOCD\xpack-openocd-0.12.0-7\bin`
 - The **ST-Link driver** (see step 1 below)
-- The firmware `.hex` file: `SW102_BAF_0.2.4.hex` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - download it, create the folder `C:\SW102` and move the downloaded `.hex` there
+- The firmware `.hex` file: `SW102_BAF_0.3.1.hex` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - download it, create the folder `C:\SW102` and move the downloaded `.hex` there
 
 This single `.hex` file is a complete, ready-to-flash image - it already contains the bootloader, the Nordic SoftDevice (BLE stack), and the application, merged together at build time. You don't need to download anything else from any other repository.
 
@@ -183,7 +185,7 @@ The blue tape in the photos is just there so the drill doesn't accidentally scra
    ```
 4. Run the write-and-verify command (paste it exactly, then press Enter). If you saved the `.hex` somewhere other than `C:\SW102`, change the path, and write it with `/`, not `\` (OpenOCD drops `\`, so `C:\SW102\...` would not be found):
    ```
-   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; flash write_image C:/SW102/SW102_BAF_0.2.4.hex; verify_image C:/SW102/SW102_BAF_0.2.4.hex; reset halt; resume; shutdown"
+   openocd.exe -f interface/stlink.cfg -f target/nordic/nrf51.cfg -c "init; reset init; flash write_image C:/SW102/SW102_BAF_0.3.1.hex; verify_image C:/SW102/SW102_BAF_0.3.1.hex; reset halt; resume; shutdown"
    ```
 
 These must be two separate commands, run one after the other - see Troubleshooting below for why. If `verify_image` reports no errors, the flash succeeded.
@@ -207,7 +209,7 @@ Once the bootloader is installed (first flash via ST-Link), later firmware updat
 ### What you need
 
 - The **nRF Connect** app by Nordic Semiconductor: [Android (Google Play)](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp), [iOS (App Store)](https://apps.apple.com/app/nrf-connect-for-mobile/id1054362403)
-- The firmware update package: `SW102_BAF_FW_0.2.4.zip` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - open the link on your phone and download it there
+- The firmware update package: `SW102_BAF_FW_0.3.1.zip` from the [latest release](https://github.com/moskil2/SW102_BAFANG_CUSTOM_FIRMWARE/releases/latest) - open the link on your phone and download it there
 
 ### Before updating
 
@@ -248,7 +250,7 @@ hand-drawn fonts, used to iterate on the UI before touching C code.
 
 ## Status
 
-Firmware tested on real hardware (flashed via SWD/OpenOCD and an ST-Link V2). Current version `SW102_BAF_0.2.4`. Working on hardware: Bafang UART protocol (telemetry, lights, assist), current and voltage calibration, trip/odo with reset, km/h<->mph unit switch, cockpit layouts and data screen, power unit W/A, Assist Level Programming, STREET/RACE profiles, menu with a marker icon instead of highlight, boot screen with version number. Versioning convention: `SW102_BAF_X.Y.Z`, each version flashed to hardware is saved as its own `.hex` file (never overwritten). Builds cleanly on both toolchains (ARM and emulator). Details and history in `CHANGELOG.md`.
+Firmware tested on real hardware (flashed via SWD/OpenOCD and an ST-Link V2). Current version `SW102_BAF_0.3.1`. Working on hardware: Bafang UART protocol (telemetry, lights, assist), current and voltage calibration, trip/odo with reset, km/h<->mph unit switch, cockpit layouts and data screen, power unit W/A, Assist Level Programming, STREET/RACE profiles, menu with a marker icon instead of highlight, boot screen with version number. Versioning convention: `SW102_BAF_X.Y.Z`, each version flashed to hardware is saved as its own `.hex` file (never overwritten). Builds cleanly on both toolchains (ARM and emulator). Details and history in `CHANGELOG.md`.
 
 ## License and provenance
 
@@ -260,12 +262,12 @@ The full `.hex` file also contains third-party components (bootloader, Nordic So
 
 ## Resources
 
-Current build (v0.2.4) flash/RAM usage on the nRF51822:
+Current build (v0.3.1) flash/RAM usage on the nRF51822:
 
 | Resource | Budget | Used | Free |
 |---|---|---|---|
-| Flash (application region) | 130,048 B (127.0 KB) | 69,556 B (67.9 KB) | 60,492 B (59.1 KB, 46.5%) |
-| RAM (after SoftDevice reservation) | 21,504 B (21.0 KB) | 6,620 B (6.5 KB) | 14,884 B (14.5 KB, 69.2%) |
+| Flash (application region) | 125,952 B (123.0 KB) | 74,488 B (72.7 KB) | 51,464 B (50.3 KB, 40.9%) |
+| RAM (after SoftDevice reservation) | 21,504 B (21.0 KB) | 6,984 B (6.8 KB) | 14,520 B (14.2 KB, 67.5%) |
 
 RAM figure is static `.data`+`.bss` only - runtime stack/heap live in the same free space, not counted separately.
 
@@ -273,6 +275,7 @@ Source code size (firmware application C files and headers, without the Nordic S
 
 | Version | Lines | Files |
 |---|---|---|
+| v0.3.1 | about 10,700 | 73 |
 | v0.2.4 | about 9,300 | 67 |
 | v0.2.0 (last version built on the fork code) | about 14,000 | 71 |
 
