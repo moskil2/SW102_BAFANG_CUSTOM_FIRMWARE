@@ -2,6 +2,13 @@
 
 Version history for the `SW102_BAF_X.Y.Z` firmware.
 
+## 0.3.1 (2026-11-27)
+
+- Logbook is now a submenu: "Clear" (No / YES) deletes all entries, "Events" shows them as before. The Logbook starts empty after this update.
+- Fixed: clearing the Logbook (also by Factory reset) cleared only half of its memory.
+- New "PAS Popup" setting in the Cockpit menu (OFF by default): when ON, cockpit layouts 1 and 2 also show the new assist level full screen for 3 seconds after a change. Layout 3 (data screen) always shows it.
+- "PAS Icons" in the Cockpit menu renamed to "PAS Bars".
+
 ## 0.3.0 (2026-11-26)
 
 - New menu item "Logbook" (above Factory reset): records why the display switched itself off - AUTO OFF (automatic power off, with the set time) or a firmware fault (ERROR / HARDFAULT with code and program address) - with the ODO and the time since switch-on. Up to 32 entries, newest first; when full it starts again. Factory reset clears it. A firmware update over Bluetooth may clear it.
